@@ -385,6 +385,14 @@ class BioNetwork(SimNetwork):
                             trg_cell.set_syn_connection(edge, src_cell, src_cell)
 
                 elif edge_pop.mixed_connections:
-                    raise NotImplementedError()
+                    # Handle populations that contain both virtual and internal source nodes.
+                    source_population = source_population
+                    for trg_nid, trg_cell in self._rank_node_ids[edge_pop.target_nodes].items():
+                        for edge in edge_pop.get_target(trg_nid):
+                            src_node = self.get_node_id(source_population, edge.source_node_id)
+                            # only connect virtual source nodes to replayed spike trains
+                            if src_node.model_type == 'virtual':
+                                src_cell = self.get_virtual_cells(source_population, edge.source_node_id, spike_trains, spikes_generator, sim)
+                                trg_cell.set_syn_connection(edge, src_cell, src_cell)
 
         self.io.barrier()

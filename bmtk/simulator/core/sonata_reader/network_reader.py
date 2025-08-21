@@ -127,7 +127,10 @@ class SonataNodes(NodesReader):
         return node_populations
 
     def get_node(self, node_id):
-        return self._node_pop.get_node_id(node_id)
+        base_node = self._node_pop.get_node_id(node_id)
+        # wrap base sonata node with the property adaptor so the returned object
+        # exposes the adaptor properties (e.g. .model_type, .model_template)
+        return self._prop_adaptors[base_node.group_id].get_node(base_node)
 
     def __getitem__(self, item):
         for base_node in self._node_pop[item]:
