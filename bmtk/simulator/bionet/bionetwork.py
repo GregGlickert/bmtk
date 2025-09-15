@@ -332,6 +332,7 @@ class BioNetwork(SimNetwork):
                             trg_cell.set_syn_connection(edge, src_node, gj_ids=gj_ids)
                         else:
                             trg_cell.set_syn_connection(edge, src_node)
+                            
                 for src_nid, src_cell in self._rank_node_ids[source_population].items():
                     for edge in edge_pop.get_source(src_nid):
                         if edge.is_gap_junction:
@@ -339,6 +340,8 @@ class BioNetwork(SimNetwork):
                                 raise Exception("Gap junctions must be from the same network builder")
 
                             trg_node = self.get_node_id(edge_pop.target_nodes, edge.target_node_id)
+                            if trg_node.model_type == 'virtual':
+                                continue
 
                             gj_ids = self.get_gj_id(source_population, src_nid, edge.target_node_id, True)
 
@@ -403,7 +406,6 @@ class BioNetwork(SimNetwork):
 
                 elif edge_pop.mixed_connections:
                     # Handle populations that contain both virtual and internal source nodes.
-                    source_population = source_population
                     for trg_nid, trg_cell in self._rank_node_ids[edge_pop.target_nodes].items():
                         for edge in edge_pop.get_target(trg_nid):
                             src_node = self.get_node_id(source_population, edge.source_node_id)
